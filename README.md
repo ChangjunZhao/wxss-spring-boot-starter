@@ -1,12 +1,10 @@
 # 兼容Wafer2 微信小程序用户认证Spring Boot Starter
 
----
-
 微信小程序开发最基础的功能就是用户的认证过程，在使用spring cloud微服务架构进行开发时为了简化开发周期，我们参考[Wafer](https://github.com/tencentyun/wafer)的架构，实现了java版本的会话服务器，由于目前wafer1官方已经停止更新，[Wafer2](https://github.com/tencentyun/wafer2-quickstart)服务器端完全托管在腾讯云，不对外公开会话服务器的实现，因此本项目实现的会话服务器接口参考了Wafer2的小程序客户端[wafer2-client-sdk](https://github.com/tencentyun/wafer2-client-sdk)的代码，目前与其完全兼容(仅登录接口)。
 
 ## 使用方法
 
-** 目前只支持Spring Boot 2.0以上版本。 **
+**目前只支持Spring Boot 2.0以上版本。**
 
 在您的spring boot项目中引入本项目依赖，然后增加相应功能注解和配置即可。
 
