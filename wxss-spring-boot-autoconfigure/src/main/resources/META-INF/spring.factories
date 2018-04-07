@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.venusource.ms.base.wxss.WeChatSessionServerAutoConfiguration,\
+com.venusource.ms.base.wxss.WeChatMiniAppUserInfoHandleAutoConfiguration,\
+com.venusource.ms.base.wxss.WeChatWaferLoginEndpointAutoConfiguration
