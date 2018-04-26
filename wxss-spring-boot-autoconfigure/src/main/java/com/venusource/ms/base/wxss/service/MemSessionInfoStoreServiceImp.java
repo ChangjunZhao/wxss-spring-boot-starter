@@ -27,6 +27,7 @@ public class MemSessionInfoStoreServiceImp implements SessionInfoStoreService{
 
 	@Override
 	public CSessionInfo get(String skey) {
+		if(skey == null || "".equals(skey)) return null;
 		String key= MD5Encoder.encode(Strings.toByteArray(skey));
 		return sessionMap.get(key);
 	}

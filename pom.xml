@@ -12,7 +12,7 @@
     <groupId>com.venusource.ms.base</groupId>
     <artifactId>wxss-spring-boot-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <modules>
         <module>wxss-spring-boot-autoconfigure</module>
         <module>wxss-spring-boot-starter</module>

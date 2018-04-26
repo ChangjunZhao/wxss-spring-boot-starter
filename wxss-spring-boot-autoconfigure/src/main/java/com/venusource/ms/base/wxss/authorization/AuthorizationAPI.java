@@ -66,6 +66,7 @@ public class AuthorizationAPI {
 			response = responseEntity.getBody();
 		} catch (Exception e) {
 			logger.error("连接鉴权服务错误，请检查网络状态" + getAPIUrl() + e.getMessage());
+			throw new WxssApiException(e.getMessage(), "1005");
 		}
 		if(!"0".equals(response.getReturnCode())){
 			throw new WxssApiException(response.getReturnMessage(), response.getReturnCode());

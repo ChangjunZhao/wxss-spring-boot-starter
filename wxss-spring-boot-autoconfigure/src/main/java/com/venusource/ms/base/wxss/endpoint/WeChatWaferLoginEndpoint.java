@@ -29,9 +29,6 @@ public class WeChatWaferLoginEndpoint{
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	@Autowired
-	WeChatSessionService service;
-	
-	@Autowired
 	AuthorizationAPI api;
 	
 	@GetMapping(value="/login")

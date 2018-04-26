@@ -14,14 +14,14 @@ maven:
 <dependency>
 <groupId>com.venusource.ms.base</groupId>
 <artifactId>wxss-spring-boot-starter</artifactId>
-<version>1.0.0</version>
+<version>1.0.1</version>
 </dependency>
 ```
 
 gradle:
 
 ```
-compile('com.venusource.ms.base:wxss-spring-boot-starter:1.0.0')
+compile('com.venusource.ms.base:wxss-spring-boot-starter:1.0.1')
 ```
 
 ### 会话服务器
