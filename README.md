@@ -14,7 +14,7 @@ maven:
 <dependency>
 <groupId>com.venusource.ms.base</groupId>
 <artifactId>wxss-spring-boot-starter</artifactId>
-<version>1.0.1</version>
+<version>1.0.2</version>
 </dependency>
 ```
 
@@ -53,11 +53,17 @@ public static void main(String[] args) {
 ```
 weixin.app.appid= yourappid
 weixin.app.secret= yoursecret
+
+//1.0.2以后版本支持企业微信小程序
+qyweixin.app.corpid = yourcorpid
+qyweixin.app.secret = yoursecret
 ```
 
 启动服务后，会自动在服务内对外暴露`/mina_auth` 会话服务接口。
 
 接口与php版本完全相同，见[wafer-session-server](https://github.com/tencentyun/wafer-session-server)。
+
+增加environment参数，值为: wxwork ,即会调用企业微信的认证。
 
 注：会话服务会和微信的服务器进行通信，获取session\_key，需要能访问外网，同时为了安全性会话服务一般只对内部服务提供服务，不对外暴露接口，因此如果使用Spring Cloud的服务网关，需要把它忽略。
 
