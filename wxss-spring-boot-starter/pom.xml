@@ -21,7 +21,7 @@
   <parent>
     <groupId>com.venusource.ms.base</groupId>
     <artifactId>wxss-spring-boot-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>wxss-spring-boot-starter</artifactId>

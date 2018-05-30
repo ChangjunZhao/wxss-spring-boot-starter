@@ -7,15 +7,11 @@ import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 public class HttpClientUtil {
-	
-	private static final Logger logger = LoggerFactory.getLogger(HttpClientUtil.class);
 	
 	public static String httpGet(String url,String code) throws IOException, URISyntaxException {
 		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();

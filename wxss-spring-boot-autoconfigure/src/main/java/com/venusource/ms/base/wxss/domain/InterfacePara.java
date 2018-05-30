@@ -15,6 +15,8 @@ public class InterfacePara {
 	String id;
 	
 	String skey;
+	
+	String environment;
 
 	public String getCode() {
 		return code;
@@ -54,6 +56,14 @@ public class InterfacePara {
 
 	public void setSkey(String skey) {
 		this.skey = skey;
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public void setEnvironment(String environment) {
+		this.environment = environment;
 	}
 
 	

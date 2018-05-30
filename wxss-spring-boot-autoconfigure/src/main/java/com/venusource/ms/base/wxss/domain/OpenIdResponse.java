@@ -14,6 +14,10 @@ public class OpenIdResponse {
 	int expiresIn;
 	
 	String openid;
+	
+	String corpid;
+	
+	String userid;
 
 	public String getSessionKey() {
 		return sessionKey;
@@ -37,6 +41,22 @@ public class OpenIdResponse {
 
 	public void setOpenid(String openid) {
 		this.openid = openid;
+	}
+
+	public String getCorpid() {
+		return corpid;
+	}
+
+	public void setCorpid(String corpid) {
+		this.corpid = corpid;
+	}
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
 	}
 	
 	

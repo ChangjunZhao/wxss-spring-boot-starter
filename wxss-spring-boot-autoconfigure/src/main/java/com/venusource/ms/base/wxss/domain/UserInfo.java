@@ -5,6 +5,16 @@ public class UserInfo {
 	/** The open id. */
 	private String openId;
 	
+	/** 
+	 * this field is for company wechat
+	 */
+	private String corpid;
+	
+	/** 
+	 * this field is for company wechat
+	 */
+	private String userid;
+	
 	/** The nick name. */
 	private String nickName;
 	
@@ -109,7 +119,21 @@ public class UserInfo {
 	public void setWatermark(Watermark watermark) {
 		this.watermark = watermark;
 	}
-	
-	
+
+	public String getCorpid() {
+		return corpid;
+	}
+
+	public void setCorpid(String corpid) {
+		this.corpid = corpid;
+	}
+
+	public String getUserid() {
+		return userid;
+	}
+
+	public void setUserid(String userid) {
+		this.userid = userid;
+	}
 
 }

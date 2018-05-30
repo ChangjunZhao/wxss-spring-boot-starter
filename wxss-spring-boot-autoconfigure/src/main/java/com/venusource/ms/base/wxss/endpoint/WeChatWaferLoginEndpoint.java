@@ -17,7 +17,6 @@ import com.venusource.ms.base.wxss.domain.Constants;
 import com.venusource.ms.base.wxss.domain.IdKeyResponse;
 import com.venusource.ms.base.wxss.domain.LoginResponse;
 import com.venusource.ms.base.wxss.domain.LoginResponseData;
-import com.venusource.ms.base.wxss.service.WeChatSessionService;
 /**
  * wafer2-client-sdk login endpoint, not support wafer1
  * @author ChangjunZhao

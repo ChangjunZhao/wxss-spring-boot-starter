@@ -21,12 +21,12 @@
   <parent>
     <groupId>com.venusource.ms.base</groupId>
     <artifactId>wxss-spring-boot-parent</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
   </parent>
 
   <artifactId>wxss-spring-boot-autoconfigure</artifactId>
   <packaging>jar</packaging>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
   <name>Wechat session server SpringBoot AutoConfiguration</name>
   <description>Wechat session server SpringBoot AutoConfiguration</description>
 

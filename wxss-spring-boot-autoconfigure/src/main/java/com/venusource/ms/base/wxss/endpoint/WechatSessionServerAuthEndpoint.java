@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.venusource.ms.base.wxss.domain.AuthRequest;
 import com.venusource.ms.base.wxss.service.WeChatSessionService;
 
@@ -24,8 +23,6 @@ public class WechatSessionServerAuthEndpoint{
 	
 	@PostMapping(value="/mina_auth")
 	public ResponseEntity<Object> minaAuth(@RequestBody AuthRequest authRequest) throws JsonProcessingException{
-		ObjectMapper mapper = new ObjectMapper();
-		System.out.println(mapper.writeValueAsString(authRequest));
 		return ResponseEntity.ok().body(service.handleRequest(authRequest));
 	}
 

@@ -8,16 +8,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import com.venusource.ms.base.wxss.domain.QyWxssProperties;
 import com.venusource.ms.base.wxss.domain.WxssProperties;
 import com.venusource.ms.base.wxss.endpoint.WechatSessionServerAuthEndpoint;
 import com.venusource.ms.base.wxss.endpoint.support.WxssApiExceptionHandler;
 import com.venusource.ms.base.wxss.service.MemSessionInfoStoreServiceImp;
 import com.venusource.ms.base.wxss.service.SessionInfoStoreService;
 import com.venusource.ms.base.wxss.service.WeChatSessionService;
+import com.venusource.ms.base.wxss.util.AccessTokenUpdateTask;
 
 @Configuration
 @ConditionalOnBean(WeChatSessionServerConfiguration.Marker.class)
-@EnableConfigurationProperties(WxssProperties.class)
+@EnableConfigurationProperties(value={WxssProperties.class,QyWxssProperties.class})
 public class WeChatSessionServerAutoConfiguration {
 	
 	@Bean
@@ -30,6 +32,12 @@ public class WeChatSessionServerAutoConfiguration {
 	@ConditionalOnMissingBean
 	public WeChatSessionService weChatSessionService(){
 		return new WeChatSessionService();
+	}
+	
+	@Bean
+	@ConditionalOnMissingBean
+	public AccessTokenUpdateTask accessTokenUpdateTask(){
+		return new AccessTokenUpdateTask();
 	}
 	
 	@Bean

@@ -8,11 +8,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
@@ -24,6 +27,8 @@ import com.venusource.ms.base.wxss.domain.CSessionInfo;
 import com.venusource.ms.base.wxss.domain.IdKeyResponse;
 import com.venusource.ms.base.wxss.domain.IdKeyResponseData;
 import com.venusource.ms.base.wxss.domain.OpenIdResponse;
+import com.venusource.ms.base.wxss.domain.QyWxAccessTokenResponse;
+import com.venusource.ms.base.wxss.domain.QyWxssProperties;
 import com.venusource.ms.base.wxss.domain.UserInfo;
 import com.venusource.ms.base.wxss.domain.WxssProperties;
 import com.venusource.ms.base.wxss.endpoint.support.WxssApiException;
@@ -34,6 +39,8 @@ import com.venusource.ms.base.wxss.util.SHA1;
 @Service
 public class WeChatSessionService {
 
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
 	@Autowired
 	ObjectMapper objectMapper;
 
@@ -41,23 +48,29 @@ public class WeChatSessionService {
 	WxssProperties props;
 
 	@Autowired
+	QyWxssProperties qyProps;
+
+	@Autowired
 	SessionInfoStoreService store;
 
+	private String qyWeChatAccessToken;
+
 	public IdKeyResponse handleRequest(AuthRequest authRequest) {
+		boolean isQyWechat = "wxwork".equals(authRequest.getCinterface().getPara().getEnvironment());
 		if ("qcloud.cam.id_skey".equals(authRequest.getCinterface().getInterfaceName())) {
-			OpenIdResponse openIdResponse = getOpenIdByCode(authRequest.getCinterface().getPara().getCode());
+			OpenIdResponse openIdResponse = getOpenIdByCode(authRequest.getCinterface().getPara().getCode(),isQyWechat);
 			UserInfo userInfo = getUserInfo(authRequest.getCinterface().getPara().getEncryptData(),
 					openIdResponse.getSessionKey(), authRequest.getCinterface().getPara().getIv());
 			IdKeyResponseData responseData = buildResponseData(openIdResponse, userInfo);
 			try {
 				// 持久化session
-				CSessionInfo sessionInfo = generateSessionInfo(responseData, openIdResponse);
+				CSessionInfo sessionInfo = generateSessionInfo(responseData, openIdResponse,isQyWechat);
 				store.add(sessionInfo);
 			} catch (JsonProcessingException e) {
 				throw new WxssApiException("add session fail.", "1006");
 			}
 
-			return buildIdKeyResponse(responseData,"OK");
+			return buildIdKeyResponse(responseData, "OK");
 		} else if ("qcloud.cam.auth".equals(authRequest.getCinterface().getInterfaceName())) {
 			CSessionInfo sessionInfo = store.get(authRequest.getCinterface().getPara().getSkey());
 			checkSessionInfo(sessionInfo);
@@ -69,17 +82,18 @@ public class WeChatSessionService {
 			} catch (Exception e) {
 				throw new WxssApiException("AUTH_FAIL", "60012");
 			}
-			return buildIdKeyResponse(responseData,"AUTH_SUCCESS");
-		}else{
+			return buildIdKeyResponse(responseData, "AUTH_SUCCESS");
+		} else {
 			throw new WxssApiException("interface not exist.", "1002");
 		}
 	}
-	
-	private void checkSessionInfo(CSessionInfo sessionInfo){
-		if(sessionInfo==null) throw new WxssApiException("AUTH_FAIL", "60012");
+
+	private void checkSessionInfo(CSessionInfo sessionInfo) {
+		if (sessionInfo == null)
+			throw new WxssApiException("AUTH_FAIL", "60012");
 		Date now = new Date();
-		long interval = (now.getTime()- sessionInfo.getCreateTime().getTime())/1000;
-		if(interval>7200){
+		long interval = (now.getTime() - sessionInfo.getCreateTime().getTime()) / 1000;
+		if (interval > 7200) {
 			throw new WxssApiException("AUTH_FAIL", "60012");
 		}
 	}
@@ -92,7 +106,7 @@ public class WeChatSessionService {
 		return responseData;
 	}
 
-	private IdKeyResponse buildIdKeyResponse(IdKeyResponseData data,String message) {
+	private IdKeyResponse buildIdKeyResponse(IdKeyResponseData data, String message) {
 		IdKeyResponse response = new IdKeyResponse();
 		response.setReturnData(data);
 		response.setReturnCode("0");
@@ -100,12 +114,16 @@ public class WeChatSessionService {
 		return response;
 	}
 
-	private CSessionInfo generateSessionInfo(IdKeyResponseData data, OpenIdResponse openIdResponse)
+	private CSessionInfo generateSessionInfo(IdKeyResponseData data, OpenIdResponse openIdResponse,boolean isQyWechat)
 			throws JsonProcessingException {
 		CSessionInfo sessionInfo = new CSessionInfo();
 		sessionInfo.setCreateTime(new Date());
 		sessionInfo.setLastVisitTime(new Date());
-		sessionInfo.setOpenId(data.getUserInfo().getOpenId());
+		if(isQyWechat){
+			sessionInfo.setOpenId(data.getUserInfo().getUserid());
+		}else{
+			sessionInfo.setOpenId(data.getUserInfo().getOpenId());
+		}
 		sessionInfo.setSessionKey(openIdResponse.getSessionKey());
 		sessionInfo.setSkey(data.getSkey());
 		sessionInfo.setUserInfo(objectMapper.writeValueAsString(data.getUserInfo()));
@@ -113,12 +131,18 @@ public class WeChatSessionService {
 		return sessionInfo;
 	}
 
-	public OpenIdResponse getOpenIdByCode(String code) {
-		String url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + props.getAppid() + "&secret="
-				+ props.getSecret() + "&js_code=" + code + "&grant_type=authorization_code";
+	public OpenIdResponse getOpenIdByCode(String code, boolean isQyWechat) {
+		String url;
+		if (isQyWechat) {
+			url = "https://qyapi.weixin.qq.com/cgi-bin/miniprogram/jscode2session?access_token=" + qyWeChatAccessToken
+					+ "&js_code=" + code + "&grant_type=authorization_code";
+		} else {
+			url = "https://api.weixin.qq.com/sns/jscode2session?appid=" + props.getAppid() + "&secret="
+					+ props.getSecret() + "&js_code=" + code + "&grant_type=authorization_code";
+		}
 		try {
 			String result = HttpClientUtil.httpGet(url, "UTF-8");
-			System.out.println(result);
+			logger.debug(result);
 			if (!result.contains("errcode")) {
 				return objectMapper.readValue(result, OpenIdResponse.class);
 			} else {
@@ -128,6 +152,27 @@ public class WeChatSessionService {
 				} else {
 					throw new WxssApiException("internal error.", "1005");
 				}
+			}
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			throw new WxssApiException(e.getMessage(), "1005");
+		} catch (URISyntaxException e) {
+			logger.error(e.getMessage());
+			throw new WxssApiException(e.getMessage(), "1005");
+		}
+	}
+
+	@PostConstruct
+	public void updateAccessToken() {
+		String url = "https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=" + qyProps.getCorpid() + "&corpsecret="
+				+ qyProps.getSecret();
+		try {
+			String result = HttpClientUtil.httpGet(url, "UTF-8");
+			logger.debug(result);
+			QyWxAccessTokenResponse accessTokenResponse = objectMapper.readValue(result, QyWxAccessTokenResponse.class);
+			if (Integer.valueOf(0).equals(accessTokenResponse.getErrcode())
+					&& !"".equals(accessTokenResponse.getAccessToken())) {
+				qyWeChatAccessToken = accessTokenResponse.getAccessToken();
 			}
 		} catch (IOException e) {
 			throw new WxssApiException(e.getMessage(), "1005");
